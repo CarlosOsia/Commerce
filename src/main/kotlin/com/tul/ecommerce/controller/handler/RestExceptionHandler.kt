@@ -1,6 +1,6 @@
 package com.tul.ecommerce.controller.handler
 
-import com.tul.ecommerce.data.exceptions.CreateCarritoException
+import com.tul.ecommerce.data.exceptions.CrudException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 class ExceptionHandlingController: ResponseEntityExceptionHandler()   {
 
-    @ExceptionHandler(CreateCarritoException::class)
+    @ExceptionHandler(CrudException::class)
     fun handleAll(ex: Exception, request: WebRequest?): ResponseEntity<Any?>? {
         val apiError = ApiError(
             HttpStatus.INTERNAL_SERVER_ERROR, ex.message, "error occurred"

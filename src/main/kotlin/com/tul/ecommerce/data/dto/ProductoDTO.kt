@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import java.util.*
 
 class ProductoDTO (
-    var uuid_producto : UUID? = null,
+    var uuidProducto : UUID? = null,
     var tipoProducto : UUID? = null,
     var tipoProductoDTO: TipoProductoDTO? = null,
     var sku: String? = null,

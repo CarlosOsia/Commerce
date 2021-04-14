@@ -5,7 +5,7 @@ import com.tul.ecommerce.data.enum.TipoProductoEnum
 import java.util.*
 
 data class TipoProductoDTO (
-    var uuid_tipo_producto : UUID? = null,
+    var uuidTipoProducto : UUID? = null,
     var descripcion : String? = null,
     var codigo : String? = TipoProductoEnum.SIMPLE.codigo
 )

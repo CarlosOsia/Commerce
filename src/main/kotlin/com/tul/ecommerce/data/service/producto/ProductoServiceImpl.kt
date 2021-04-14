@@ -3,15 +3,13 @@ package com.tul.ecommerce.data.service.producto
 import com.tul.ecommerce.data.dto.ProductoDTO
 import com.tul.ecommerce.data.entity.ProductosEntity
 import com.tul.ecommerce.data.entity.TipoProductosEntity
-import com.tul.ecommerce.data.exceptions.CreateCarritoException
+import com.tul.ecommerce.data.exceptions.CrudException
 import com.tul.ecommerce.data.mapper.ProductoMapper
 import com.tul.ecommerce.data.repositories.CarritoProductoRepository
 import com.tul.ecommerce.data.repositories.ProductosRepository
 import com.tul.ecommerce.data.repositories.TipoProductoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.math.BigInteger
-import java.util.*
 import java.util.stream.Collectors
 
 @Service
@@ -21,24 +19,24 @@ private val carritoProductoRepository: CarritoProductoRepository): ProductoServi
 
     override fun agregarProducto(productoDTO: ProductoDTO): ProductoDTO? {
         if(productoDTO.nombre == null || productoDTO.sku == null || productoDTO.descripcion == null) {
-            throw CreateCarritoException("El producto debe tener un SKU, un nombre y una descripcion")
+            throw CrudException("El producto debe tener un SKU, un nombre y una descripcion")
         }
         if(this.productosRepository.findFirstBySku(productoDTO.sku) != null){
-            throw CreateCarritoException("Ya se encuentra registrado un producto con este SKU")
+            throw CrudException("Ya se encuentra registrado un producto con este SKU")
         }
         val codigo = this.tipoProductoRepository.findFirstByCodigo(productoDTO.tipoProductoDTO?.codigo)
-            ?: throw CreateCarritoException("No se encontró codigo del tipo de producto")
+            ?: throw CrudException("No se encontró codigo del tipo de producto")
         val productoEntity = ProductoMapper.toEntity(productoDTO, codigo)
         return ProductoMapper.toDTO(this.productosRepository.save(productoEntity))
     }
 
     override fun consultarProducto(productoDTO: ProductoDTO): ProductoDTO? {
-        if(productoDTO.uuid_producto == null && productoDTO.sku == null){
-            throw CreateCarritoException("No se envio id del producto a buscar")
+        if(productoDTO.uuidProducto == null && productoDTO.sku == null){
+            throw CrudException("No se envio id del producto a buscar")
         }
         val result = this.productosRepository.findFirstBySku(productoDTO.sku)
-            ?: (this.productosRepository.findFirstByUuidProducto(productoDTO.uuid_producto)
-                ?: throw CreateCarritoException("No se encontro el articulo"))
+            ?: (this.productosRepository.findFirstByUuidProducto(productoDTO.uuidProducto)
+                ?: throw CrudException("No se encontro el articulo"))
         return ProductoMapper.toDTO(result)
     }
 
@@ -48,14 +46,14 @@ private val carritoProductoRepository: CarritoProductoRepository): ProductoServi
     }
 
     override fun modificarProducto(productoDTO: ProductoDTO) : ProductoDTO {
-        if(productoDTO.uuid_producto == null){
-            throw CreateCarritoException("No se envio id del producto a editar")
+        if(productoDTO.uuidProducto == null){
+            throw CrudException("No se envio id del producto a editar")
         }
-        var productoEntity = this.productosRepository.findFirstByUuidProducto(productoDTO.uuid_producto) ?:
-        throw CreateCarritoException("uuid del producto no encontrada")
+        var productoEntity = this.productosRepository.findFirstByUuidProducto(productoDTO.uuidProducto) ?:
+        throw CrudException("uuid del producto no encontrada")
         if(productoDTO.tipoProductoDTO?.codigo != null){
             val codigo = this.tipoProductoRepository.findFirstByCodigo(productoDTO.tipoProductoDTO?.codigo)
-                ?: throw CreateCarritoException("No se encontró codigo del tipo de producto")
+                ?: throw CrudException("No se encontró codigo del tipo de producto")
             productoEntity = updateProducto(productoEntity, ProductoMapper.toEntity(productoDTO), codigo)
         }else{
             productoEntity = updateProducto(productoEntity, ProductoMapper.toEntity(productoDTO))
@@ -64,13 +62,13 @@ private val carritoProductoRepository: CarritoProductoRepository): ProductoServi
     }
 
     override fun eliminarProducto(productoDTO: ProductoDTO) {
-        if(productoDTO.uuid_producto == null){
-            throw CreateCarritoException("No se envio id del producto a eliminar")
+        if(productoDTO.uuidProducto == null){
+            throw CrudException("No se envio id del producto a eliminar")
         }
-        var productoEntity = this.productosRepository.findFirstByUuidProducto(productoDTO.uuid_producto) ?:
-        throw CreateCarritoException("uuid del producto no encontrada")
-        if(this.carritoProductoRepository.getCountProductoInCarrito(productoDTO.uuid_producto) > 0){
-            throw CreateCarritoException("el producto se encuentra agregado a un carrito y no se puede eliminar")
+        var productoEntity = this.productosRepository.findFirstByUuidProducto(productoDTO.uuidProducto) ?:
+        throw CrudException("uuid del producto no encontrada")
+        if(this.carritoProductoRepository.getCountProductoInCarrito(productoDTO.uuidProducto) > 0){
+            throw CrudException("el producto se encuentra agregado a un carrito y no se puede eliminar")
         }
         this.productosRepository.delete(productoEntity)
     }

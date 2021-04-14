@@ -8,7 +8,7 @@ import java.util.*
 object ProductoMapper {
     fun toDTO(productosEntity: Optional<ProductosEntity>): ProductoDTO {
         return ProductoDTO(
-            uuid_producto = productosEntity.get().uuidProducto,
+            uuidProducto = productosEntity.get().uuidProducto,
             nombre = productosEntity.get().nombre,
             descripcion = productosEntity.get().descripcion,
             precio = productosEntity.get().precio,
@@ -26,7 +26,7 @@ object ProductoMapper {
 
     fun toEntity(productoDTO: ProductoDTO, tipoProductosEntity: TipoProductosEntity? = null): ProductosEntity {
         return ProductosEntity().apply {
-            this.uuidProducto = productoDTO.uuid_producto
+            this.uuidProducto = productoDTO.uuidProducto
             this.nombre = productoDTO.nombre
             this.descripcion = productoDTO.descripcion
             this.precio = productoDTO.precio

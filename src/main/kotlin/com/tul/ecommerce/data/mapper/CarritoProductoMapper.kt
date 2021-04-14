@@ -1,16 +1,13 @@
 package com.tul.ecommerce.data.mapper
 
-import com.tul.ecommerce.data.dto.CarritoDTO
 import com.tul.ecommerce.data.dto.CarritoProductosDTO
 import com.tul.ecommerce.data.entity.CarritoEntity
 import com.tul.ecommerce.data.entity.CarritoProductosEntity
-import com.tul.ecommerce.data.entity.EstadoCarritoEntity
 import com.tul.ecommerce.data.entity.ProductosEntity
-import java.math.BigDecimal
 
 object CarritoProductoMapper {
     fun toDTO(carritoProductosEntity: CarritoProductosEntity) : CarritoProductosDTO {
-        return CarritoProductosDTO(uuid_carrito_producto = carritoProductosEntity.uuidCarritoProducto,
+        return CarritoProductosDTO(uuidCarritoProducto = carritoProductosEntity.uuidCarritoProducto,
             cantidad = carritoProductosEntity.cantidad,
             carritoDTO = CarritoMapper.toDTO(carritoProductosEntity.carritoByCarrito ?: CarritoEntity()),
             productoDTO = ProductoMapper.toDTO(carritoProductosEntity.productosByProducto ?: ProductosEntity())
@@ -19,7 +16,7 @@ object CarritoProductoMapper {
 
     fun toEntity(carritoProductosDTO: CarritoProductosDTO) : CarritoProductosEntity {
         return CarritoProductosEntity().apply {
-            this.uuidCarritoProducto = carritoProductosDTO.uuid_carrito_producto
+            this.uuidCarritoProducto = carritoProductosDTO.uuidCarritoProducto
             this.cantidad = carritoProductosDTO.cantidad
             this.carritoByCarrito = CarritoMapper.toEntity(carritoProductosDTO.carritoDTO)
             this.productosByProducto = ProductoMapper.toEntity(carritoProductosDTO.productoDTO)

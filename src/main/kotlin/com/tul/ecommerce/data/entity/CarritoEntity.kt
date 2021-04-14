@@ -28,8 +28,6 @@ class CarritoEntity {
     @get:OneToMany(mappedBy = "carritoByCarrito")
     var carritoProductosByUuidCarrito: Collection<CarritoProductosEntity>? = null
 
-    @get:OneToMany(mappedBy = "carritoByCarrito")
-    var facturacionsByUuidCarrito: Collection<FacturacionEntity>? = null
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
