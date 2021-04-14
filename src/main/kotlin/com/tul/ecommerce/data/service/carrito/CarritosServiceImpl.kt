@@ -1,16 +1,23 @@
 package com.tul.ecommerce.data.service.carrito
 
 import com.tul.ecommerce.data.dto.CarritoDTO
+import com.tul.ecommerce.data.dto.CarritoProductosDTO
+import com.tul.ecommerce.data.dto.ProductoDTO
+import com.tul.ecommerce.data.entity.CarritoProductosEntity
 import com.tul.ecommerce.data.enum.EstadoCarritoEnum
 import com.tul.ecommerce.data.exceptions.CreateCarritoException
 import com.tul.ecommerce.data.mapper.CarritoMapper
+import com.tul.ecommerce.data.mapper.CarritoProductoMapper
+import com.tul.ecommerce.data.mapper.ProductoMapper
 import com.tul.ecommerce.data.repositories.CarritoProductoRepository
 import com.tul.ecommerce.data.repositories.CarritosRepository
 import com.tul.ecommerce.data.repositories.EstadoCarritoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.*
+import java.util.stream.Collectors
 
 @Service
 class CarritosServiceImpl @Autowired constructor(private val carritosRepository: CarritosRepository,
@@ -30,9 +37,49 @@ private val carritoProductoRepository: CarritoProductoRepository) : CarritosServ
             throw CreateCarritoException("No se encontró el uuid del carrito a modificar")
         }
         val codigo = this.estadoCarritoRepository.findFirstByCodigo(EstadoCarritoEnum.COMPLETADO.codigo)
-        //val total = this.carritoProductoRepository.getTotalCarrito(uuid).get(0).
+        val productos = this.carritoProductoRepository.getTotalCarrito(carritoDTO.uuidCarrito)
+        var total = BigDecimal.ZERO
+        productos.forEach{
+            var productoDTO = ProductoMapper.toDTO(it)
+            total = total.plus((productoDTO.obtenerPrecio() ?: BigDecimal.ZERO)
+                .multiply(this.carritoProductoRepository.getQuantity(carritoDTO.uuidCarrito, productoDTO.uuid_producto)))
+        }
         val carritoEntity = CarritoMapper.toEntity(carritoDTO, codigo)
-        return CarritoMapper.toDTO(this.carritosRepository.save(carritoEntity))
+        return CarritoMapper.toDTO(this.carritosRepository.save(carritoEntity), total)
+    }
+
+    override fun agregarProducto(carritoProductosDTO: CarritoProductosDTO): CarritoProductosDTO {
+        if(carritoProductosDTO.carritoDTO.uuidCarrito == null || carritoProductosDTO.productoDTO.uuid_producto == null) {
+            throw CreateCarritoException("Se debe enviar uuid del producto y uuid del carrito")
+        }
+        var productoEnCarrito = carritoProductoRepository.findFirstByCarritoAndProducto(carritoProductosDTO.carritoDTO.idCarrito,
+            carritoProductosDTO.productoDTO.sku) ?: return CarritoProductoMapper.toDTO(this.carritoProductoRepository.save(CarritoProductoMapper.toEntity(carritoProductosDTO)))
+        productoEnCarrito.cantidad = productoEnCarrito.cantidad?.plus(carritoProductosDTO.cantidad ?: BigInteger.ONE)
+        return CarritoProductoMapper.toDTO(this.carritoProductoRepository.save(productoEnCarrito))
+    }
+
+    override fun listAllProducts(uuid: UUID?): List<CarritoProductosDTO> {
+        return this.carritoProductoRepository.findAllByCarrito(uuid).stream()
+            .map { carritoProductosEntity -> CarritoProductoMapper.toDTO(carritoProductosEntity) }.collect(Collectors.toList())
+    }
+
+    override fun modificarProducto(carritoProductosDTO: CarritoProductosDTO): CarritoProductosDTO {
+        if(carritoProductosDTO.carritoDTO.idCarrito == null || carritoProductosDTO.productoDTO.sku == null || carritoProductosDTO.cantidad == null) {
+            throw CreateCarritoException("Se debe enviar sku del producto, id del carrito y cantidad a modificar")
+        }
+        var productoEnCarrito = carritoProductoRepository.findFirstByCarritoAndProducto(carritoProductosDTO.carritoDTO.idCarrito,
+            carritoProductosDTO.productoDTO.sku) ?: throw CreateCarritoException("No se encontro el producto en el carrito")
+        productoEnCarrito.cantidad = carritoProductosDTO.cantidad
+        return CarritoProductoMapper.toDTO(this.carritoProductoRepository.save(productoEnCarrito))
+    }
+
+    override fun eliminarProducto(carritoProductosDTO: CarritoProductosDTO?) {
+        if(carritoProductosDTO?.carritoDTO?.idCarrito == null || carritoProductosDTO?.productoDTO.sku == null) {
+            throw CreateCarritoException("Se debe enviar sku del producto e id del carrito")
+        }
+        var productoEntity = this.carritoProductoRepository.findFirstByCarritoAndProducto(carritoProductosDTO.carritoDTO.idCarrito, carritoProductosDTO.productoDTO.sku) ?:
+        throw CreateCarritoException("No se encontro el producto en el carrito")
+        this.carritoProductoRepository.delete(productoEntity)
     }
 
 }

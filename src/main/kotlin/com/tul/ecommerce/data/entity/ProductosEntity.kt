@@ -1,8 +1,8 @@
 package com.tul.ecommerce.data.entity
 
-import com.tul.ecommerce.data.*
 import com.tul.ecommerce.data.enum.TipoProductoEnum
-import java.math.BigInteger
+import jdk.nashorn.internal.ir.annotations.Ignore
+import java.math.BigDecimal
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
@@ -22,7 +22,7 @@ class ProductosEntity {
 
     @get:Column(name = "precio", nullable = false, precision = 0)
     @get:Basic
-    var precio: BigInteger? = null
+    var precio: BigDecimal? = null
 
     @get:Column(name = "nombre", nullable = false, length = -1)
     @get:Basic
@@ -32,15 +32,16 @@ class ProductosEntity {
     @get:Basic
     var descripcion: String? = null
 
-    @get:Column(name = "creacion_producto", nullable = false)
+    @get:Column(name = "creacion_producto", nullable = false, insertable = false, updatable = false)
     @get:Basic
     var creacionProducto: Timestamp? = null
 
-    @get:Column(name = "activo", nullable = false)
+    @get:Column(name = "activo", nullable = false, insertable = false)
     @get:Basic
     var activo: Boolean? = null
 
-    @Transient
+    @get:Transient
+    @get:Ignore
     var tipoProductoEnum: TipoProductoEnum? = null
 
     @PostLoad

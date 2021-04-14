@@ -1,16 +1,25 @@
 package com.tul.ecommerce.data.dto
 
+import com.tul.ecommerce.data.enum.TipoProductoEnum
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.util.*
 
-class ProductoDTO {
-    private var uuid_producto : UUID? = null
-    private var tipoProducto : UUID? = null
-    private var sku: String? = null
-    private var precio: BigDecimal? = null
-    private var nombre: String? = null
-    private var descripcion: String? = null
-    private var creacionProducto: Timestamp? = null
-    private var activo: Boolean? = null
+class ProductoDTO (
+    var uuid_producto : UUID? = null,
+    var tipoProducto : UUID? = null,
+    var tipoProductoDTO: TipoProductoDTO? = null,
+    var sku: String? = null,
+    var precio: BigDecimal? = null,
+    var nombre: String? = null,
+    var descripcion: String? = null,
+    var creacionProducto: Timestamp? = null,
+    var activo: Boolean? = null
+){
+    fun obtenerPrecio(): BigDecimal? {
+        if(tipoProductoDTO?.codigo.equals(TipoProductoEnum.SIMPLE.codigo)){
+            return precio
+        }
+        return precio?.divide(BigDecimal(2))
+    }
 }

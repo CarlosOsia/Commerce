@@ -1,4 +1,3 @@
 package com.tul.ecommerce.data.exceptions
 
-class CreateCarritoException (val msg : String) : RuntimeException(){
-}
+class CreateCarritoException (private val msg : String) : RuntimeException(msg)

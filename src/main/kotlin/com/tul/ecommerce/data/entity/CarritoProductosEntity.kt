@@ -4,19 +4,13 @@ import java.math.BigInteger
 import java.util.*
 import javax.persistence.*
 
-@Entity
+@Entity(name = "carrito_productos")
 @Table(name = "carrito_productos", schema = "public")
 class CarritoProductosEntity {
     @get:Column(name = "uuid_carrito_producto", nullable = false)
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.AUTO)
     var uuidCarritoProducto: UUID? = null
-
-    @get:Basic
-    var carritoUUID: UUID? = null
-
-    @get:Basic
-    var productoUUID: UUID? = null
 
     @get:Column(name = "cantidad", nullable = false, precision = 0)
     @get:Basic
@@ -34,12 +28,10 @@ class CarritoProductosEntity {
         if (o == null || javaClass != o.javaClass) return false
         val that = o as CarritoProductosEntity
         return uuidCarritoProducto == that.uuidCarritoProducto &&
-                carritoUUID == that.carritoUUID &&
-                productoUUID == that.productoUUID &&
                 cantidad == that.cantidad
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(uuidCarritoProducto, carritoUUID, productoUUID, cantidad)
+        return Objects.hash(uuidCarritoProducto, cantidad)
     }
 }

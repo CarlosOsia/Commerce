@@ -1,8 +1,11 @@
 package com.tul.ecommerce.data.dto
 
+import com.tul.ecommerce.data.enum.EstadoCarritoEnum
+import com.tul.ecommerce.data.enum.TipoProductoEnum
 import java.util.*
 
-class TipoProductoDTO {
-    private var uuid_tipo_producto : UUID? = null;
-    private var descripcion : String? = null
-}
+data class TipoProductoDTO (
+    var uuid_tipo_producto : UUID? = null,
+    var descripcion : String? = null,
+    var codigo : String? = TipoProductoEnum.SIMPLE.codigo
+)
