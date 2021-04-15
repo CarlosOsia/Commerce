@@ -40,6 +40,7 @@ dependencies {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("junit:junit:4.12")
 }
 
 tasks.withType<KotlinCompile> {
@@ -51,4 +52,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+sourceSets.main {
+	java.srcDirs("src/main/java", "src/main/kotlin")
+}
+
+sourceSets.test {
+	java.srcDirs("src/main/kotlin")
 }

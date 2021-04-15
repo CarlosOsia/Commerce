@@ -40,7 +40,7 @@ private val carritoProductoRepository: CarritoProductoRepository) : CarritosServ
         productos.forEach{
             var productoDTO = ProductoMapper.toDTO(it)
             total = total.plus((productoDTO.obtenerPrecio() ?: BigDecimal.ZERO)
-                .multiply(this.carritoProductoRepository.getQuantity(carritoDTO.uuidCarrito, productoDTO.uuidProducto)))
+                .multiply(this.carritoProductoRepository.getQuantity(carritoDTO.uuidCarrito, productoDTO.uuidProducto) ?: BigDecimal.ONE))
         }
         val carritoEntity = CarritoMapper.toEntity(carritoDTO, codigo)
         return CarritoMapper.toDTO(this.carritosRepository.save(carritoEntity), total)

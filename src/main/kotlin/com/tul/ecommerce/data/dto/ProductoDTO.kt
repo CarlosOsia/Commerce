@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.util.*
 
-class ProductoDTO (
+data class ProductoDTO (
     var uuidProducto : UUID? = null,
     var tipoProducto : UUID? = null,
     var tipoProductoDTO: TipoProductoDTO? = null,
@@ -22,4 +22,6 @@ class ProductoDTO (
         }
         return precio?.divide(BigDecimal(2))
     }
+
+
 }
